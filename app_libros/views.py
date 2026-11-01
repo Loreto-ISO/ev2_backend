@@ -2,6 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Libro
 from .forms import LibroForm
+<<<<<<< HEAD
+=======
+from django.contrib.auth import authenticate
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+>>>>>>> origin/feature/eduardoseguridad
 
 # Read
 def inicio(request):
@@ -40,4 +49,34 @@ def eliminar_libro(request, id):
         libro.delete()
         messages.error(request, 'El libro ha sido eliminado del inventario.')
         return redirect('inicio')
+<<<<<<< HEAD
     return render(request, 'app_libros/eliminar.html', {'libro': libro})
+=======
+    return render(request, 'app_libros/eliminar.html', {'libro': libro})
+
+def login_pagina(request):
+    """Devuelve la pantalla HTML del login"""
+    return render(request, 'app_libros/login.html')
+
+class LoginAPIView(APIView):
+    """API para validar usuario y devolver el Token"""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        usuario = authenticate(username=username, password=password)
+
+        if usuario is not None:
+            token, creado = Token.objects.get_or_create(user=usuario)
+            return Response({
+                'mensaje': 'Autenticacion correcta',
+                'usuario': usuario.username,
+                'token': token.key
+            }, status=status.HTTP_200_OK)
+            
+        return Response({
+            'error': 'Usuario o contraseña incorrecta'
+        }, status=status.HTTP_401_UNAUTHORIZED)
+>>>>>>> origin/feature/eduardoseguridad
