@@ -2,27 +2,90 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Libro</title>
+    <title>Eliminar Libro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }</style>
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <div class="row justify-content-center"><div class="col-md-6">
-            <div class="card shadow border-warning">
-                <div class="card-header bg-warning text-dark fw-bold"><h4 class="mb-0">Eliminar Libro: "{{ libro.titulo }}"</h4></div>
-                <div class="card-body">
-                    <form method="POST">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="d-grid gap-2 mt-3">
-                            <button type="submit" class="btn btn-warning fw-bold text-dark">Eliminar</button>
-                            <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">Cancelar</a>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow border-danger text-center">
+                    <div class="card-body p-5">
+                        <h1 class="text-danger mb-4">🗑️ Eliminar Libro</h1>
+                        <p class="fs-5">¿Estás seguro de que deseas eliminar este libro del inventario?</p>
+                        
+                        <div class="bg-light p-3 rounded mb-4 text-start border">
+                            <p class="mb-1"><strong>Título:</strong> <span id="info-titulo">Cargando...</span></p>
+                            <p class="mb-1"><strong>Autor:</strong> <span id="info-autor">Cargando...</span></p>
+                            <p class="mb-1"><strong>Stock:</strong> <span id="info-stock">Cargando...</span></p>
                         </div>
-                    </form>
+                        
+                        <p class="text-muted">Esta acción no se puede deshacer y borrará el registro de la base de datos (DELETE).</p>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                            <button id="btnEliminar" class="btn btn-danger fw-bold px-4">Sí, eliminar libro</button>
+                            <a href="/libros/" class="btn btn-dark px-4">Cancelar y volver</a>
+                        </div>
+                        <p id="mensaje" class="mt-3 fw-bold"></p>
+                    </div>
                 </div>
             </div>
-        </div></div>
+        </div>
     </div>
+
+    <script>
+        const token = sessionStorage.getItem('token');
+        if (!token) { window.location.href = '/'; }
+
+        const urlParts = window.location.pathname.split('/').filter(Boolean);
+        const libroId = urlParts[urlParts.length - 1];
+        const btnEliminar = document.getElementById('btnEliminar');
+        const mensaje = document.getElementById('mensaje');
+
+        // 1. Consultar detalles para mostrarlos antes de borrar
+        async function cargarDetalles() {
+            try {
+                const respuesta = await fetch(`/api/libros/${libroId}/`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+                if (respuesta.ok) {
+                    const libro = await respuesta.json();
+                    document.getElementById('info-titulo').textContent = libro.titulo;
+                    document.getElementById('info-autor').textContent = libro.autor;
+                    document.getElementById('info-stock').textContent = libro.stock;
+                }
+            } catch (error) {
+                console.error("Error al cargar detalles");
+            }
+        }
+
+        // 2. Ejecutar la eliminación por DELETE
+        btnEliminar.addEventListener('click', async function() {
+            btnEliminar.disabled = true;
+            mensaje.textContent = 'Eliminando...';
+            
+            try {
+                const respuesta = await fetch(`/api/libros/${libroId}/`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+
+                if (respuesta.ok || respuesta.status === 204) {
+                    mensaje.textContent = '¡Libro eliminado correctamente!';
+                    mensaje.className = 'mt-3 fw-bold text-success';
+                    setTimeout(() => window.location.href = '/libros/', 1000);
+                } else {
+                    mensaje.textContent = 'No se pudo eliminar el libro.';
+                    mensaje.className = 'mt-3 fw-bold text-danger';
+                    btnEliminar.disabled = false;
+                }
+            } catch (error) {
+                mensaje.textContent = 'Error de conexión.';
+                btnEliminar.disabled = false;
+            }
+        });
+
+        cargarDetalles();
+    </script>
 </body>
 </html>
