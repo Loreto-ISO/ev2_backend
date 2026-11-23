@@ -1,10 +1,10 @@
-from django.urls import path
+﻿from django.urls import path
 
 from . import views
 
 
 urlpatterns = [
-    # Autenticación
+    # AutenticaciÃ³n
     path(
         "",
         views.login_view,
@@ -26,7 +26,7 @@ urlpatterns = [
         name="logout_usuario",
     ),
 
-    # Sitio público
+    # Sitio pÃºblico
     path(
         "inicio/",
         views.inicio,
@@ -43,7 +43,7 @@ urlpatterns = [
         name="detalle_producto",
     ),
 
-    # Gestión administrativa
+    # GestiÃ³n administrativa
     path(
         "crear/",
         views.crear_libro,
