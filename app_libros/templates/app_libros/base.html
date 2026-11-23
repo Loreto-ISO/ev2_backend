@@ -1,0 +1,105 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Librería Doña Zoyla
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'libreria/css/estilos.css' %}"
+    >
+</head>
+
+<body>
+    <header class="encabezado">
+        <div class="contenedor encabezado__contenido">
+            <a href="{% url 'inicio' %}" class="marca">
+                <img
+                    src="{% static 'libreria/img/logo-dona-zoyla.png' %}"
+                    alt="Logo Librería Doña Zoyla"
+                    class="marca__logo"
+                >
+
+                <div class="marca__texto">
+                    <strong>Librería Doña Zoyla</strong>
+
+                    <span>
+                        Porque en libros, útiles y educación
+                        ¡Soy la mejor opción!
+                    </span>
+                </div>
+            </a>
+
+            <nav class="navegacion">
+                <a href="{% url 'inicio' %}">
+                    Inicio
+                </a>
+
+                <a href="{% url 'catalogo' %}">
+                    Catálogo
+                </a>
+
+                {% if request.user.is_authenticated %}
+                    {% if request.user.is_staff %}
+                        <a href="{% url 'admin_panel' %}">
+                            Gestión
+                        </a>
+                    {% endif %}
+
+                    <a href="{% url 'logout_usuario' %}">
+                        Cerrar sesión
+                    </a>
+                {% else %}
+                    <a href="{% url 'login_cliente' %}">
+                        Iniciar sesión
+                    </a>
+
+                    <a
+                        href="{% url 'registro_cliente' %}"
+                        class="boton boton--pequeno"
+                    >
+                        Crear cuenta
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+        <section class="contenedor mensajes">
+            {% for message in messages %}
+                <div class="mensaje mensaje--{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </section>
+    {% endif %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="pie">
+        <div class="contenedor">
+            <strong>Librería Doña Zoyla</strong>
+
+            <p>
+                Libros, útiles escolares, oficina y manualidades.
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

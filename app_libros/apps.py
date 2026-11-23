@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class AppLibrosConfig(AppConfig):
-    name = 'app_libros'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "app_libros"
