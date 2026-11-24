@@ -66,12 +66,12 @@ urlpatterns = [
         name="eliminar_libro",
     ),
 
-    # API REST temporal
     path(
         "api/productos/",
         views.LibrosAPIView.as_view(),
         name="api_productos",
     ),
+
     path(
         "api/productos/<int:id>/",
         views.LibroDetalleAPIView.as_view(),

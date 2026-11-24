@@ -13,6 +13,11 @@ from rest_framework.views import APIView
 
 from .models import Categoria, Producto
 
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+
+from .permissions import SoloAdministradorOModoLectura
+from .serializers import ProductoSerializer
+
 
 # ============================================================
 # FUNCIONES AUXILIARES
@@ -762,17 +767,24 @@ def admin_panel(request):
         },
     )
 
-# ============================================================
-# API REST TEMPORAL
-# ============================================================
-
 class LibrosAPIView(APIView):
     """
-    GET: lista productos.
-    POST: crea productos, solo para administradores.
+    GET: lista los productos activos.
+
+    POST: crea un producto.
+    Solo puede utilizarlo un administrador.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+        SoloAdministradorOModoLectura,
+    ]
+
+    parser_classes = [
+        JSONParser,
+        FormParser,
+        MultiPartParser,
+    ]
 
     def get(self, request):
         productos = (
@@ -782,212 +794,182 @@ class LibrosAPIView(APIView):
             .order_by("nombre")
         )
 
-        datos = [
-            producto_a_diccionario(producto)
-            for producto in productos
-        ]
+        serializer = ProductoSerializer(
+            productos,
+            many=True,
+            context={
+                "request": request,
+            },
+        )
 
         return Response(
-            datos,
+            {
+                "cantidad": productos.count(),
+                "resultados": serializer.data,
+            },
             status=status.HTTP_200_OK,
         )
 
     def post(self, request):
-        if not request.user.is_staff:
-            return Response(
-                {
-                    "error": (
-                        "No tienes autorización "
-                        "para crear productos."
-                    ),
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        nombre = request.data.get(
-            "nombre",
-            request.data.get("titulo", ""),
+        serializer = ProductoSerializer(
+            data=request.data,
+            context={
+                "request": request,
+            },
         )
 
-        descripcion = request.data.get(
-            "descripcion",
-            "",
-        )
-
-        categoria_id = request.data.get("categoria")
-        precio = request.data.get("precio")
-        stock = request.data.get("stock")
-        activo = request.data.get("activo", True)
-
-        if not nombre or not str(nombre).strip():
-            return Response(
-                {
-                    "error": "El nombre del producto es obligatorio.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not descripcion or not str(descripcion).strip():
-            return Response(
-                {
-                    "error": "La descripción es obligatoria.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if not categoria_id:
-            return Response(
-                {
-                    "error": "La categoría es obligatoria.",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        categoria = get_object_or_404(
-            Categoria,
-            id=categoria_id,
-            activa=True,
-        )
-
-        try:
-            producto = Producto(
-                nombre=str(nombre).strip(),
-                descripcion=str(descripcion).strip(),
-                categoria=categoria,
-                precio=precio,
-                stock=stock,
-                activo=activo,
-            )
-
-            producto.full_clean()
-            producto.save()
-
-        except ValidationError as errores:
+        if not serializer.is_valid():
             return Response(
                 {
                     "error": "Los datos enviados no son válidos.",
-                    "detalles": errores.message_dict,
+                    "detalles": serializer.errors,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        producto = serializer.save()
+
+        respuesta = ProductoSerializer(
+            producto,
+            context={
+                "request": request,
+            },
+        )
 
         return Response(
             {
                 "mensaje": "Producto creado correctamente.",
-                "producto": producto_a_diccionario(producto),
+                "producto": respuesta.data,
             },
             status=status.HTTP_201_CREATED,
         )
 
-
 class LibroDetalleAPIView(APIView):
     """
-    GET: consulta un producto.
-    PUT: actualiza un producto, solo administrador.
-    DELETE: elimina un producto, solo administrador.
+    GET: obtiene un producto.
+
+    PUT: reemplaza los datos de un producto.
+
+    PATCH: actualiza parcialmente un producto.
+
+    DELETE: elimina un producto.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [
+        IsAuthenticated,
+        SoloAdministradorOModoLectura,
+    ]
 
-    def get(self, request, id):
-        producto = get_object_or_404(
+    parser_classes = [
+        JSONParser,
+        FormParser,
+        MultiPartParser,
+    ]
+
+    def obtener_producto(self, id):
+        return get_object_or_404(
             Producto.objects.select_related("categoria"),
             id=id,
         )
 
+    def get(self, request, id):
+        producto = self.obtener_producto(id)
+
+        serializer = ProductoSerializer(
+            producto,
+            context={
+                "request": request,
+            },
+        )
+
         return Response(
-            producto_a_diccionario(producto),
+            serializer.data,
             status=status.HTTP_200_OK,
         )
 
     def put(self, request, id):
-        if not request.user.is_staff:
-            return Response(
-                {
-                    "error": (
-                        "No tienes autorización "
-                        "para actualizar productos."
-                    ),
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
+        producto = self.obtener_producto(id)
 
-        producto = get_object_or_404(
-            Producto,
-            id=id,
+        serializer = ProductoSerializer(
+            producto,
+            data=request.data,
+            context={
+                "request": request,
+            },
         )
 
-        if "nombre" in request.data:
-            producto.nombre = request.data["nombre"]
-
-        if "titulo" in request.data:
-            producto.nombre = request.data["titulo"]
-
-        if "descripcion" in request.data:
-            producto.descripcion = request.data["descripcion"]
-
-        if "categoria" in request.data:
-            producto.categoria = get_object_or_404(
-                Categoria,
-                id=request.data["categoria"],
-                activa=True,
-            )
-
-        if "precio" in request.data:
-            producto.precio = request.data["precio"]
-
-        if "stock" in request.data:
-            producto.stock = request.data["stock"]
-
-        if "activo" in request.data:
-            producto.activo = request.data["activo"]
-
-        try:
-            producto.full_clean()
-            producto.save()
-
-        except ValidationError as errores:
+        if not serializer.is_valid():
             return Response(
                 {
                     "error": "Los datos enviados no son válidos.",
-                    "detalles": errores.message_dict,
+                    "detalles": serializer.errors,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        producto = serializer.save()
+
+        respuesta = ProductoSerializer(
+            producto,
+            context={
+                "request": request,
+            },
+        )
+
         return Response(
             {
                 "mensaje": "Producto actualizado correctamente.",
-                "producto": producto_a_diccionario(producto),
+                "producto": respuesta.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def patch(self, request, id):
+        producto = self.obtener_producto(id)
+
+        serializer = ProductoSerializer(
+            producto,
+            data=request.data,
+            partial=True,
+            context={
+                "request": request,
+            },
+        )
+
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "error": "Los datos enviados no son válidos.",
+                    "detalles": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        producto = serializer.save()
+
+        respuesta = ProductoSerializer(
+            producto,
+            context={
+                "request": request,
+            },
+        )
+
+        return Response(
+            {
+                "mensaje": "Producto actualizado parcialmente.",
+                "producto": respuesta.data,
             },
             status=status.HTTP_200_OK,
         )
 
     def delete(self, request, id):
-        if not request.user.is_staff:
-            return Response(
-                {
-                    "error": (
-                        "No tienes autorización "
-                        "para eliminar productos."
-                    ),
-                },
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        producto = get_object_or_404(
-            Producto,
-            id=id,
-        )
-
+        producto = self.obtener_producto(id)
         producto.delete()
 
         return Response(
             status=status.HTTP_204_NO_CONTENT,
         )
 
-
-# Alias para distintas convenciones que pudiera usar urls.py.
 LibrosApiView = LibrosAPIView
 LibroDetalleApiView = LibroDetalleAPIView
 ProductosAPIView = LibrosAPIView
