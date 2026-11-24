@@ -18,6 +18,8 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from .permissions import SoloAdministradorOModoLectura
 from .serializers import ProductoSerializer
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 # ============================================================
 # FUNCIONES AUXILIARES
@@ -968,6 +970,51 @@ class LibroDetalleAPIView(APIView):
 
         return Response(
             status=status.HTTP_204_NO_CONTENT,
+        )
+
+class LogoutAPIView(APIView):
+    """
+    Revoca el Refresh Token mediante blacklist.
+    """
+
+    permission_classes = [
+        IsAuthenticated,
+    ]
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+
+        if not refresh_token:
+            return Response(
+                {
+                    "error": (
+                        "Debes enviar el Refresh Token "
+                        "en el campo 'refresh'."
+                    ),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+        except TokenError:
+            return Response(
+                {
+                    "error": (
+                        "El Refresh Token es inválido, "
+                        "está vencido o ya fue revocado."
+                    ),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "mensaje": "Sesión cerrada correctamente.",
+            },
+            status=status.HTTP_200_OK,
         )
 
 LibrosApiView = LibrosAPIView
