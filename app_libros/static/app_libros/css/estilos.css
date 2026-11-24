@@ -190,3 +190,116 @@ body{
     font-weight:bold;
 }
 
+.registro-seccion {
+    min-height: calc(100vh - 180px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: #f7f1e7;
+}
+
+.registro-tarjeta {
+    width: 100%;
+    max-width: 520px;
+    padding: 38px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 12px 35px rgba(38, 72, 61, 0.16);
+}
+
+.registro-tarjeta h1 {
+    margin: 0;
+    color: #26483d;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.registro-subtitulo {
+    margin: 8px 0 28px;
+    color: #5d625f;
+    text-align: center;
+}
+
+.registro-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.campo-formulario label {
+    color: #26483d;
+    font-weight: 700;
+}
+
+.campo-formulario input {
+    padding: 13px 14px;
+    border: 1px solid #c9d2ce;
+    border-radius: 9px;
+    font-size: 1rem;
+}
+
+.campo-formulario input:focus {
+    border-color: #34785a;
+    outline: 3px solid rgba(52, 120, 90, 0.16);
+}
+
+.campo-formulario small {
+    color: #68706c;
+}
+
+.requisitos-password {
+    padding: 14px 18px;
+    color: #3f4843;
+    background: #f3f7f5;
+    border-left: 4px solid #c79b45;
+    border-radius: 8px;
+}
+
+.requisitos-password ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+.boton--registro {
+    width: 100%;
+    padding: 13px;
+    border: 0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    background: #1f8c57;
+}
+
+.enlace-sesion {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.enlace-sesion a {
+    color: #1f6feb;
+    font-weight: 600;
+}
+
+.mensaje {
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+}
+
+.mensaje--error {
+    color: #842029;
+    background: #f8d7da;
+}
+
+.mensaje--success {
+    color: #0f5132;
+    background: #d1e7dd;
+}
+

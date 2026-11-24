@@ -1,76 +1,82 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Librería</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-</head>
-<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-    <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 400px;">
-        <div class="card-body p-5 text-center">
-            <h3 class="fw-bold text-primary mb-1"><i class="bi bi-book-half"></i> Iniciar Sesión</h3>
-            <p class="text-muted mb-4">Librería Doña Zoyla</p>
+{% extends "app_libros/base.html" %}
 
-            <form id="formLogin">
-                <div class="form-floating mb-3 text-start">
-                    <input type="text" class="form-control" id="username" placeholder="Usuario" required>
-                    <label for="username">Usuario</label>
-                </div>
-                <div class="form-floating mb-4 text-start">
-                    <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
-                    <label for="password">Contraseña</label>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Ingresar</button>
-            </form>
-            
-            <div id="mensaje" class="mt-3 fw-bold"></div>
-            
-            <!-- SECCIÓN DE REGISTRO -->
-            <div class="mt-4 text-center">
-                <p class="mb-2 text-muted">¿No tienes una cuenta?</p>
-                <a href="/registro/" class="btn btn-outline-success w-100 fw-bold">Regístrate aquí</a>
+{% block title %}
+Iniciar sesión | Librería Doña Zoyla
+{% endblock %}
+
+{% block content %}
+
+<section class="registro-seccion">
+
+    <div class="registro-tarjeta">
+
+        <h1>Iniciar sesión</h1>
+
+        <p class="registro-subtitulo">
+            Bienvenido a Librería Doña Zoyla
+        </p>
+
+        <form
+            method="post"
+            action="{% url 'login' %}"
+            class="registro-formulario"
+        >
+            {% csrf_token %}
+
+            <div class="campo-formulario">
+                <label for="username">
+                    Nombre de usuario
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value="{{ username|default:'' }}"
+                    minlength="4"
+                    maxlength="30"
+                    autocomplete="username"
+                    placeholder="Ingresa tu usuario"
+                    required
+                >
             </div>
-            
-        </div>
+
+            <div class="campo-formulario">
+                <label for="password">
+                    Contraseña
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    minlength="8"
+                    maxlength="128"
+                    autocomplete="current-password"
+                    placeholder="Ingresa tu contraseña"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="boton boton--registro"
+            >
+                Iniciar sesión
+            </button>
+
+        </form>
+
+        <p class="enlace-sesion">
+            ¿Todavía no tienes una cuenta?
+
+            <a href="{% url 'registro' %}">
+                Regístrate aquí
+            </a>
+        </p>
+
     </div>
 
-    <script>
-        const formulario = document.getElementById('formLogin');
-        const mensaje = document.getElementById('mensaje');
+</section>
 
-        formulario.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            mensaje.textContent = 'Verificando...';
-            mensaje.className = 'mt-3 fw-bold text-secondary';
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            try {
-                const respuesta = await fetch('/api/login/', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username, password})
-                });
-
-                const datos = await respuesta.json();
-
-                if (respuesta.ok) {
-                    mensaje.textContent = '¡Ingreso exitoso!';
-                    mensaje.className = 'mt-3 fw-bold text-success';
-                    sessionStorage.setItem('token', datos.token);
-                    setTimeout(() => { window.location.href = '/libros/'; }, 1000);
-                } else {
-                    mensaje.textContent = datos.error || 'Credenciales incorrectas';
-                    mensaje.className = 'mt-3 fw-bold text-danger';
-                }
-            } catch (error) {
-                mensaje.textContent = 'Error de conexión con el servidor.';
-                mensaje.className = 'mt-3 fw-bold text-danger';
-            }
-        });
-    </script>
-</body>
-</html>
+{% endblock %}
