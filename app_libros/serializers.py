@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from drf_spectacular.utils import extend_schema_field
 from .models import Categoria, Producto
 
 
@@ -53,6 +53,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "actualizado_en",
         )
 
+    @extend_schema_field(serializers.URLField(allow_null=True))
     def get_imagen_url(self, producto):
         if not producto.imagen:
             return None
