@@ -85,7 +85,6 @@ def inicio(request):
         },
     )
 
-
 def catalogo(request):
     """
     Catálogo público con buscador y filtro por categoría.
@@ -95,7 +94,6 @@ def catalogo(request):
     /catalogo/?categoria=novelas
     /catalogo/?q=papel&categoria=resmas-papeles
     """
-
     productos = (
         Producto.objects
         .filter(activo=True)
@@ -124,7 +122,7 @@ def catalogo(request):
 
     return render(
         request,
-        "libreria/catalogo.html",
+        "app_libros/catalogo.html",
         {
             "productos": productos,
             "categorias": categorias,
@@ -147,7 +145,7 @@ def detalle_producto(request, id):
 
     return render(
         request,
-        "libreria/detalle_producto.html",
+        "app_libros/detalle_producto.html",
         {
             "producto": producto,
         },
@@ -375,7 +373,7 @@ def login_view(request):
 
             return render(
                 request,
-                "app_libros/login.html",
+                "app_libros/login_cliente.html",
                 {
                     "username": username,
                 },
@@ -395,7 +393,7 @@ def login_view(request):
 
             return render(
                 request,
-                "app_libros/login.html",
+                "app_libros/login_cliente.html",
                 {
                     "username": username,
                 },
@@ -409,7 +407,7 @@ def login_view(request):
 
             return render(
                 request,
-                "app_libros/login.html",
+                "app_libros/login_cliente.html",
             )
 
         login(request, usuario)
@@ -426,7 +424,7 @@ def login_view(request):
 
     return render(
         request,
-        "app_libros/login.html",
+        "app_libros/login_cliente.html",
     )
 
 
@@ -746,10 +744,26 @@ crear_producto = crear_libro
 editar_producto = editar_libro
 eliminar_producto = eliminar_libro
 
+def admin_panel(request):
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    if not request.user.is_staff:
+        return redirect("catalogo")
+
+    productos = Producto.objects.all().order_by("nombre")
+
+    return render(
+        request,
+        "app_libros/admin_panel.html",
+        {
+            "productos": productos,
+        },
+    )
 
 # ============================================================
 # API REST TEMPORAL
-# Eduardo posteriormente agregará serializers, permisos y Swagger.
 # ============================================================
 
 class LibrosAPIView(APIView):

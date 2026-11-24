@@ -43,6 +43,12 @@ urlpatterns = [
         name="detalle_producto",
     ),
 
+    path(
+        "admin-panel/",
+        views.admin_panel,
+        name="admin_panel",
+    ),
+
     # GestiÃ³n administrativa
     path(
         "crear/",

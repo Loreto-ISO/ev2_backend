@@ -1,0 +1,51 @@
+{% extends "app_libros/base.html" %}
+
+{% block title %}
+Panel Administrador
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor">
+
+    <h1>Panel de Administración</h1>
+
+    <p>
+        Administración de Librería Doña Zoyla.
+    </p>
+
+    <a href="{% url 'crear_libro' %}">
+        Agregar producto
+    </a>
+
+    <table>
+
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Stock</th>
+        </tr>
+
+        {% for producto in productos %}
+
+        <tr>
+
+            <td>{{ producto.nombre }}</td>
+
+            <td>
+                ${{ producto.precio }}
+            </td>
+
+            <td>
+                {{ producto.stock }}
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends "app_libros/base.html" %}
+
+{% block title %}
+Catálogo | Librería Doña Zoyla
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor">
+
+    <section class="hero-catalogo">
+
+        <h1>Librería Doña Zoyla</h1>
+
+        <p>
+            Porque en libros, útiles y educación
+            ¡Soy la mejor opción!
+        </p>
+
+    </section>
+
+    <section class="filtros">
+
+        <form method="GET">
+
+            <input
+                type="text"
+                name="q"
+                placeholder="Buscar productos..."
+                value="{{ consulta }}"
+            >
+
+            <select name="categoria">
+
+                <option value="">
+                    Todas las categorías
+                </option>
+
+                {% for categoria in categorias %}
+
+                <option
+                    value="{{ categoria.slug }}"
+                    {% if categoria.slug == categoria_seleccionada %}
+                        selected
+                    {% endif %}
+                >
+                    {{ categoria.nombre }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <button type="submit">
+                Buscar
+            </button>
+
+        </form>
+
+    </section>
+
+    <section>
+
+        <h3>
+            Productos encontrados: {{ productos|length }}
+        </h3>
+
+    </section>
+
+    <section class="productos-grid">
+
+        {% for producto in productos %}
+
+        <div class="producto-card">
+
+            {% if producto.imagen %}
+
+                <img
+                    src="{{ producto.imagen.url }}"
+                    alt="{{ producto.nombre }}"
+                    class="producto-img"
+                >
+
+            {% else %}
+
+                <img
+                    src="https://via.placeholder.com/300x300?text=Sin+Imagen"
+                    alt="Sin imagen"
+                    class="producto-img"
+                >
+
+            {% endif %}
+
+            <h2>{{ producto.nombre }}</h2>
+
+            <p>
+                {{ producto.descripcion|truncatechars:80 }}
+            </p>
+
+            <p>
+                Categoría:
+                <strong>{{ producto.categoria.nombre }}</strong>
+            </p>
+
+            <h3>
+                ${{ producto.precio }}
+            </h3>
+
+            {% if producto.stock == 0 %}
+
+                <p class="stock-agotado">
+                    Sin stock
+                </p>
+
+            {% elif producto.stock <= 5 %}
+
+                <p class="stock-limitado">
+                    Últimas unidades
+                </p>
+
+            {% else %}
+
+                <p class="stock-disponible">
+                    Disponible
+                </p>
+
+            {% endif %}
+
+            <a
+                href="{% url 'detalle_producto' producto.id %}"
+                class="btn-detalle"
+            >
+                Ver detalle
+            </a>
+
+        </div>
+
+        {% empty %}
+
+        <div class="producto-card">
+
+            <h2>
+                No existen productos registrados
+            </h2>
+
+            <p>
+                Agrega productos desde el panel de administración.
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+{% endblock %}
