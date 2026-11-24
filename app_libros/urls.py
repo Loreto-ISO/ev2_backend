@@ -1,15 +1,16 @@
 ﻿from django.urls import path
 
-from . import views
-
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
     TokenVerifyView,
 )
 
+from . import views
+
+
 urlpatterns = [
-    # AutenticaciÃ³n
+    # Sitio web
     path(
         "",
         views.login_view,
@@ -30,8 +31,6 @@ urlpatterns = [
         views.cerrar_sesion,
         name="logout_usuario",
     ),
-
-    # Sitio pÃºblico
     path(
         "inicio/",
         views.inicio,
@@ -48,13 +47,12 @@ urlpatterns = [
         name="detalle_producto",
     ),
 
+    # Gestión administrativa
     path(
         "admin-panel/",
         views.admin_panel,
         name="admin_panel",
     ),
-
-    # GestiÃ³n administrativa
     path(
         "crear/",
         views.crear_libro,
@@ -71,40 +69,38 @@ urlpatterns = [
         name="eliminar_libro",
     ),
 
-    path(
-        "api/productos/",
-        views.LibrosAPIView.as_view(),
-        name="api_productos",
-    ),
-
-    path(
-        "api/productos/<int:id>/",
-        views.LibroDetalleAPIView.as_view(),
-        name="api_producto_detalle",
-    ),
-
-        # Autenticación JWT
+    # JWT
     path(
         "api/token/",
         TokenObtainPairView.as_view(),
         name="token_obtain_pair",
     ),
-
     path(
         "api/token/refresh/",
         TokenRefreshView.as_view(),
         name="token_refresh",
     ),
-
     path(
         "api/token/verify/",
         TokenVerifyView.as_view(),
         name="token_verify",
     ),
-
     path(
-    "api/logout/",
-    views.LogoutAPIView.as_view(),
-    name="api_logout",
+        "api/logout/",
+        views.LogoutAPIView.as_view(),
+        name="api_logout",
+    ),
+
+    # Productos API
+    path(
+        "api/productos/",
+        views.LibrosAPIView.as_view(),
+        name="api_productos",
+    ),
+    path(
+        "api/productos/<int:id>/",
+        views.LibroDetalleAPIView.as_view(),
+        name="api_producto_detalle",
     ),
 ]
+
