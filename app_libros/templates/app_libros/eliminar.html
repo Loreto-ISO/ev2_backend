@@ -45,7 +45,7 @@
         // 1. Consultar detalles para mostrarlos antes de borrar
         async function cargarDetalles() {
             try {
-                const respuesta = await fetch(`/api/libros/${libroId}/`, {
+                const respuesta = await fetch(`/api/productos/${libroId}/`, {
                     headers: { 'Authorization': `Token ${token}` }
                 });
                 if (respuesta.ok) {
@@ -65,7 +65,7 @@
             mensaje.textContent = 'Eliminando...';
             
             try {
-                const respuesta = await fetch(`/api/libros/${libroId}/`, {
+                const respuesta = await fetch(`/api/productos/${libroId}/`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Token ${token}` }
                 });

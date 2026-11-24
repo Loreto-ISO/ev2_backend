@@ -55,7 +55,7 @@
         // 1. Consultar el libro existente
         async function cargarLibro() {
             try {
-                const respuesta = await fetch(`/api/libros/${libroId}/`, {
+                const respuesta = await fetch(`/api/productos/${libroId}/`, {
                     headers: { 'Authorization': `Token ${token}` }
                 });
                 
@@ -87,7 +87,7 @@
             };
 
             try {
-                const respuesta = await fetch(`/api/libros/${libroId}/`, {
+                const respuesta = await fetch(`/api/productos/${libroId}/`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

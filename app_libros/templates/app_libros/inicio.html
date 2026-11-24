@@ -49,7 +49,7 @@
 
         async function cargarLibros() {
             try {
-                const respuesta = await fetch('/api/libros/', {
+                const respuesta = await fetch('/api/productos/', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${token}`
