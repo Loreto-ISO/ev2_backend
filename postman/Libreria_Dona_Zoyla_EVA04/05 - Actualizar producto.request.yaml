@@ -1,0 +1,18 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/productos/1/
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \  \"precio\": 1190,\r
+
+    \  \"stock\": 45\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+order: 5000
+

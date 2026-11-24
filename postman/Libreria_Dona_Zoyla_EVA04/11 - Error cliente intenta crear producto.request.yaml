@@ -1,0 +1,34 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/productos/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nombre\": \"Producto no autorizado\",\r
+
+    \  \"descripcion\": \"Este producto no deberÃ­a ser creado por un cliente.\",\r
+
+    \  \"categoria\": 6,\r
+
+    \  \"precio\": 1000,\r
+
+    \  \"stock\": 5,\r
+
+    \  \"activo\": true\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{cliente_access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Cliente sin permiso devuelve 403\", function () {\r
+
+      \    pm.response.to.have.status(403);\r
+
+      });"
+    language: text/javascript
+order: 11000
+

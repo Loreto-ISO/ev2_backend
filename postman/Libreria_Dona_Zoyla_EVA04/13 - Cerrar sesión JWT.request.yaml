@@ -1,0 +1,34 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/logout/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"refresh\": \"{{refresh_token}}\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Logout realizado correctamente\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"La respuesta confirma el cierre\", function () {\r
+
+      \    const respuesta = pm.response.json();\r
+
+      \    pm.expect(respuesta).to.have.property(\"mensaje\");\r
+
+      });"
+    language: text/javascript
+order: 13000
+

@@ -1,0 +1,7 @@
+﻿$kind: collection
+variables:
+  access_token: ""
+  refresh_token: ""
+  cliente_access_token: ""
+  cliente_refresh_token: ""
+

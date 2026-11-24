@@ -1,0 +1,46 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/token/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"catalina\",\r
+
+    \  \"password\": \"CAMBIAR_CONTRASENA\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Token del cliente obtenido\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const respuesta = pm.response.json();\r
+
+      \r
+
+      pm.collectionVariables.set(\r
+
+      \    \"cliente_access_token\",\r
+
+      \    respuesta.access\r
+
+      );\r
+
+      \r
+
+      pm.collectionVariables.set(\r
+
+      \    \"cliente_refresh_token\",\r
+
+      \    respuesta.refresh\r
+
+      );"
+    language: text/javascript
+order: 10000
+
