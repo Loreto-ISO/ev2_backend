@@ -199,3 +199,20 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
 SESSION_COOKIE_SECURE = False
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API Librería Doña Zoyla",
+    "DESCRIPTION": (
+        "API REST para administrar productos, categorías "
+        "y autenticación de Librería Doña Zoyla."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SECURITY": [
+        {
+            "jwtAuth": [],
+        },
+    ],
+}
+
