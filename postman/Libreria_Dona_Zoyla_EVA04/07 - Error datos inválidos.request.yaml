@@ -1,0 +1,56 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/productos/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nombre\": \"X\",\r
+
+    \  \"descripcion\": \"corta\",\r
+
+    \  \"categoria\": 6,\r
+
+    \  \"precio\": -100,\r
+
+    \  \"stock\": -2,\r
+
+    \  \"activo\": true\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Datos invÃ¡lidos devuelven 400\", function () {\r
+
+      \    pm.response.to.have.status(400);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"La respuesta contiene detalles de validaciÃ³n\", function () {\r
+
+      \    const respuesta = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(respuesta).to.have.property(\"error\");\r
+
+      \    pm.expect(respuesta).to.have.property(\"detalles\");\r
+
+      \    pm.expect(respuesta.detalles).to.have.property(\"nombre\");\r
+
+      \    pm.expect(respuesta.detalles).to.have.property(\"descripcion\");\r
+
+      \    pm.expect(respuesta.detalles).to.have.property(\"precio\");\r
+
+      \    pm.expect(respuesta.detalles).to.have.property(\"stock\");\r
+
+      });"
+    language: text/javascript
+order: 7000
+

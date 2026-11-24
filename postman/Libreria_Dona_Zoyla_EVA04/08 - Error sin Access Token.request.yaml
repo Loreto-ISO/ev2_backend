@@ -1,0 +1,13 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/productos/
+method: POST
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Solicitud sin token devuelve 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });"
+    language: text/javascript
+order: 8000
+

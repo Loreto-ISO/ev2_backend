@@ -1,0 +1,26 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/productos/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nombre\": \"LÃ¡piz grafito HB\",\r
+
+    \  \"descripcion\": \"LÃ¡piz grafito resistente para escritura y dibujo escolar.\",\r
+
+    \  \"categoria\": 7,\r
+
+    \  \"precio\": 990,\r
+
+    \  \"stock\": 50,\r
+
+    \  \"activo\": true\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+order: 4000
+

@@ -1,0 +1,52 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/token/refresh/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"refresh\": \"{{refresh_token}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Token renovado correctamente\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const respuesta = pm.response.json();\r
+
+      \r
+
+      pm.expect(respuesta).to.have.property(\"access\");\r
+
+      \r
+
+      pm.collectionVariables.set(\r
+
+      \    \"access_token\",\r
+
+      \    respuesta.access\r
+
+      );\r
+
+      \r
+
+      if (respuesta.refresh) {\r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"refresh_token\",\r
+
+      \        respuesta.refresh\r
+
+      \    );\r
+
+      }"
+    language: text/javascript
+order: 12000
+

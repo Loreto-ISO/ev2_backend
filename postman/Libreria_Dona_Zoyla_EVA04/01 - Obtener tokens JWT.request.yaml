@@ -1,0 +1,52 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/token/
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"eduardo\",\r
+
+    \  \"password\": \"CAMBIAR_CONTRASENA\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"JWT generado correctamente\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const respuesta = pm.response.json();\r
+
+      \r
+
+      pm.expect(respuesta).to.have.property(\"access\");\r
+
+      pm.expect(respuesta).to.have.property(\"refresh\");\r
+
+      \r
+
+      pm.collectionVariables.set(\r
+
+      \    \"access_token\",\r
+
+      \    respuesta.access\r
+
+      );\r
+
+      \r
+
+      pm.collectionVariables.set(\r
+
+      \    \"refresh_token\",\r
+
+      \    respuesta.refresh\r
+
+      );\r\n"
+    language: text/javascript
+order: 1000
+

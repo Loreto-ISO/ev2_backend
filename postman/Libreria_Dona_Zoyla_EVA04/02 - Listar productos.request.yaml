@@ -1,0 +1,33 @@
+﻿$kind: http-request
+url: http://127.0.0.1:8000/api/productos/
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Listado obtenido correctamente\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"La respuesta contiene productos\", function () {\r
+
+      \    const respuesta = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(respuesta).to.have.property(\"cantidad\");\r
+
+      \    pm.expect(respuesta).to.have.property(\"resultados\");\r
+
+      \    pm.expect(respuesta.resultados).to.be.an(\"array\");\r
+
+      });"
+    language: text/javascript
+order: 2000
+
